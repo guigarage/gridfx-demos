@@ -1,12 +1,12 @@
 package com.guigarage.fx.grid.demo;
 
-import com.guigarage.fx.grid.GridView;
-
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.SliderBuilder;
 import javafx.scene.layout.HBoxBuilder;
 import javafx.scene.layout.VBox;
+
+import com.guigarage.fx.grid.GridView;
 
 public class JGridControl extends VBox {
 
