@@ -1,5 +1,7 @@
 package com.guigarage.fx.grid.demo;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 
 import javafx.animation.Interpolator;
@@ -12,8 +14,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.SliderBuilder;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -39,7 +44,7 @@ public class JGridFXDemo5 extends Application {
 	private GridView<Movie> myGrid;
 
 	private BorderPane root;
-	
+
 	public static void main(String[] args) {
 		JGridFXDemo4.launch();
 	}
@@ -64,18 +69,34 @@ public class JGridFXDemo5 extends Application {
 		public MovieGridCell() {
 			previewView = new ImageView();
 			previewView.setPreserveRatio(true);
-			previewView.fitHeightProperty().bind(MovieGridCell.this.heightProperty());
-			previewView.fitWidthProperty().bind(MovieGridCell.this.widthProperty());
-			
+			previewView.fitHeightProperty().bind(
+					MovieGridCell.this.heightProperty());
+			previewView.fitWidthProperty().bind(
+					MovieGridCell.this.widthProperty());
+
 			previewView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 				@Override
 				public void handle(MouseEvent arg0) {
-					if(getItem().previewUrl != null) {
+					if (getItem().previewUrl != null) {
 						MediaView mediaView = new MediaView();
 						System.out.println(getItem().previewUrl);
-						Media myMedia = new Media(getItem().previewUrl);
-//						Media myMedia = new Media("http://download.oracle.com/otndocs/products/javafx/oow2010-2.flv");
+						File movieFile = new File(
+								"/Users/hendrikebbers/Desktop/a.m4v");
+						try {
+							FileOutputStream out = new FileOutputStream(
+									movieFile);
+							IOUtils.copy(
+									new URL(getItem().previewUrl).openStream(),
+									out);
+							IOUtils.closeQuietly(out);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+//						Media myMedia = new Media(getItem().previewUrl);
+						Media myMedia = new Media(movieFile.toURI().toString());
+						// Media myMedia = new
+						// Media("http://download.oracle.com/otndocs/products/javafx/oow2010-2.flv");
 						MediaPlayer mediaPlayer = new MediaPlayer(myMedia);
 						mediaView.setMediaPlayer(mediaPlayer);
 						mediaView.setStyle("-fx-border-color: black;");
@@ -87,15 +108,16 @@ public class JGridFXDemo5 extends Application {
 					}
 				}
 			});
-			
+
 			getChildren().add(previewView);
-			
+
 			itemProperty().addListener(new ChangeListener<Movie>() {
 
 				@Override
 				public void changed(ObservableValue<? extends Movie> arg0,
 						Movie arg1, Movie arg2) {
-					previewView.setImage(new Image(arg2.previewImageUrl, false));
+					previewView
+							.setImage(new Image(arg2.previewImageUrl, true));
 				}
 			});
 
@@ -153,7 +175,7 @@ public class JGridFXDemo5 extends Application {
 
 		myGrid.cellWidthProperty().set(200);
 		myGrid.cellHeightProperty().set(200);
-		
+
 		myGrid.setCellFactory(new Callback<GridView<Movie>, GridCell<Movie>>() {
 
 			@Override
@@ -162,6 +184,7 @@ public class JGridFXDemo5 extends Application {
 			}
 		});
 		root = new BorderPane();
+		root.setStyle("-fx-background-color: black;");
 		root.setCenter(myGrid);
 
 		HBox searchBox = new HBox();
@@ -173,22 +196,28 @@ public class JGridFXDemo5 extends Application {
 			@Override
 			public void handle(ActionEvent arg0) {
 				try {
-					int limit = 10;
-					URL searchUrl = new URL("https://itunes.apple.com/search?term="
-							+ searchField.getText().replace(" ", "+")
-							+ "&limit=" + limit + "&entity=movie");
+					root.setCenter(myGrid);
+
+					int limit = 50;
+					URL searchUrl = new URL(
+							"https://itunes.apple.com/search?term="
+									+ searchField.getText().replace(" ", "+")
+									+ "&limit=" + limit + "&entity=movie");
 					String jsonString = IOUtils.toString(searchUrl);
 					System.out.println(jsonString);
 					JSONObject jsonObject = new JSONObject(jsonString);
 					JSONArray resultArray = jsonObject.getJSONArray("results");
-					for(int i = 0; i < resultArray.length(); i++) {
+					for (int i = 0; i < resultArray.length(); i++) {
 						JSONObject resultObject = resultArray.getJSONObject(i);
 						Movie movie = new Movie();
-						if(resultObject.has("artworkUrl100")) {
-							movie.previewImageUrl = resultObject.getString("artworkUrl100").replace("100x100", "400x400");
+						if (resultObject.has("artworkUrl100")) {
+							movie.previewImageUrl = resultObject.getString(
+									"artworkUrl100").replace("100x100",
+									"400x400");
 						}
-						if(resultObject.has("previewUrl")) {
-							movie.previewUrl = resultObject.getString("previewUrl");
+						if (resultObject.has("previewUrl")) {
+							movie.previewUrl = resultObject
+									.getString("previewUrl");
 						}
 						list.add(movie);
 					}
@@ -197,11 +226,16 @@ public class JGridFXDemo5 extends Application {
 				}
 			}
 		});
-
+		searchBox.setPadding(new Insets(10, 10, 10, 10));
 		root.setTop(searchBox);
+
+
+		Slider columnWidthSlider = SliderBuilder.create().min(10).max(512).build();
+		columnWidthSlider.valueProperty().bindBidirectional(myGrid.cellWidthProperty());
+		columnWidthSlider.valueProperty().bindBidirectional(myGrid.cellHeightProperty());
+		root.setBottom(columnWidthSlider);
 		
-		root.setBottom(new JGridControl(myGrid));
-		Scene scene = new Scene(root, 540, 210);
+		Scene scene = new Scene(root, 1024, 768);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
