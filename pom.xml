@@ -38,5 +38,10 @@
 			<artifactId>json</artifactId>
 			<version>20090211</version>
 		</dependency>
+		<dependency>
+			<groupId>org.javafxdata</groupId>
+			<artifactId>datafx-core</artifactId>
+			<version>0.0.7-SNAPSHOT</version>
+		</dependency>
     </dependencies>
 </project>

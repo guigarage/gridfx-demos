@@ -39,15 +39,15 @@ public class JGridFXDemo4 extends Application {
 //		myGrid = GridViewBuilder.create(Color.class).cellHeight(35).items(list).cellFactory(cellFactory).build();
 		
 		//WORKING
-		myGrid = new GridView<>(list);
-		myGrid.setCellFactory(cellFactory);
-		myGrid.setCellHeight(20);
-		myGrid.setCellWidth(20);
+//		myGrid = new GridView<>(list);
+//		myGrid.setCellFactory(cellFactory);
+//		myGrid.setCellHeight(20);
+//		myGrid.setCellWidth(20);
 		
 		//WRONG
-//		myGrid = new GridView<>();
-//		myGrid.setItems(list);
-//		myGrid.setCellFactory(cellFactory);
+		myGrid = new GridView<>();
+		myGrid.setItems(list);
+		myGrid.setCellFactory(cellFactory);
 		
 		Random r = new Random(System.currentTimeMillis());
 		for(int i = 0; i < 100; i++) {
