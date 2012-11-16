@@ -13,12 +13,10 @@ import com.guigarage.fx.grid.GridView;
 import com.guigarage.fx.grid.cell.DefaultGridCell;
 import com.guigarage.fx.grid.util.GridPaginationHelper;
 
-public class GridFXDemo6  extends Application {
+public class GridFXDemo6 extends Application {
 
-	private GridView<String> myGrid;
-	
 	public static void main(String[] args) {
-		JGridFXDemo1.launch();
+		GridFXDemo1.launch();
 	}
 
 	@Override
@@ -36,11 +34,11 @@ public class GridFXDemo6  extends Application {
 			
 			@Override
 			public GridCell<String> call(GridView<String> arg0) {
-				return new DefaultGridCell();
+				return new DefaultGridCell<String>();
 			}
 		};
 		
-		GridPaginationHelper<String, GridView<String>> paginationHelper = new GridPaginationHelper<>(pagination, list, cellFactory);
+		new GridPaginationHelper<>(pagination, list, cellFactory);
 		Scene scene = new Scene(pagination, 540, 210);
 		primaryStage.setScene(scene);
 		primaryStage.show();

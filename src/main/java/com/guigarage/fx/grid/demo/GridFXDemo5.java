@@ -51,7 +51,7 @@ import com.guigarage.fx.grid.demo.itunes.ITunesMedia;
 import com.guigarage.fx.grid.demo.itunes.ITunesMediaType;
 import com.guigarage.fx.grid.demo.util.ImageFitSizeHelper;
 
-public class JGridFXDemo5 extends Application {
+public class GridFXDemo5 extends Application {
 
 	private GridView<ITunesMedia> myGrid;
 
@@ -67,7 +67,7 @@ public class JGridFXDemo5 extends Application {
 	private Label loadingLabel;
 	
 	public static void main(String[] args) {
-		JGridFXDemo4.launch();
+		GridFXDemo4.launch();
 	}
 
 	private class MovieGridCell extends GridCell<ITunesMedia> {

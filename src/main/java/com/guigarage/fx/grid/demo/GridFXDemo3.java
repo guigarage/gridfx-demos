@@ -18,12 +18,12 @@ import com.guigarage.fx.grid.GridView;
 import com.guigarage.fx.grid.cell.ColorGridCell;
 import com.guigarage.fx.grid.demo.util.JGridControl;
 
-public class JGridFXDemo3 extends Application {
+public class GridFXDemo3 extends Application {
 
 	private GridView<Color> myGrid;
 	
 	public static void main(String[] args) {
-		JGridFXDemo3.launch();
+		GridFXDemo3.launch();
 	}
 
 	@Override

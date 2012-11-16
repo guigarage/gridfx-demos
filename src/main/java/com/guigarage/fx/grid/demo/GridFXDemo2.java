@@ -5,29 +5,27 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ZoomEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import com.guigarage.fx.grid.GridView;
-import com.guigarage.fx.grid.demo.util.JGridControl;
 
-public class JGridFXDemo1 extends Application {
+public class GridFXDemo2 extends Application {
 
 	private GridView<String> myGrid;
 	
 	public static void main(String[] args) {
-		JGridFXDemo1.launch();
+		GridFXDemo2.launch();
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setTitle("JGridFX Demo 1");
+		primaryStage.setTitle("JGridFX Demo 2");
 		
 		final ObservableList<String> list = FXCollections.<String>observableArrayList();
 		myGrid = new GridView<>(list);
-//		myGrid.setStyle("-fx-border-color: black;");
-
+		
 		list.add("1");
 		list.add("2");
 		list.add("3");
@@ -41,16 +39,14 @@ public class JGridFXDemo1 extends Application {
 		final BorderPane root = new BorderPane();
 		root.setTop(myGrid);
 		
-		
-		root.setBottom(new JGridControl(myGrid));
-		
 		Scene scene = new Scene(root, 540, 210);
+
 		
-		myGrid.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		root.addEventHandler(ZoomEvent.ANY, new EventHandler<ZoomEvent>() {
 
 			@Override
-			public void handle(MouseEvent arg0) {
-				list.add("ABC");
+			public void handle(ZoomEvent arg0) {
+				System.out.println("Zoom");
 			}
 		});
 		

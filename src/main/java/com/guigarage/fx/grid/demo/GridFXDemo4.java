@@ -16,12 +16,12 @@ import com.guigarage.fx.grid.GridView;
 import com.guigarage.fx.grid.demo.util.ColoredAndAnimatedGridCell;
 import com.guigarage.fx.grid.demo.util.JGridControl;
 
-public class JGridFXDemo4 extends Application {
+public class GridFXDemo4 extends Application {
 
 	private GridView<Color> myGrid;
 	
 	public static void main(String[] args) {
-		JGridFXDemo4.launch();
+		GridFXDemo4.launch();
 	}
 	
 	@Override
