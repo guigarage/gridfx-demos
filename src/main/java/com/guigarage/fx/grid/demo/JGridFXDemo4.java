@@ -13,6 +13,8 @@ import javafx.util.Callback;
 
 import com.guigarage.fx.grid.GridCell;
 import com.guigarage.fx.grid.GridView;
+import com.guigarage.fx.grid.demo.util.ColoredAndAnimatedGridCell;
+import com.guigarage.fx.grid.demo.util.JGridControl;
 
 public class JGridFXDemo4 extends Application {
 

@@ -13,8 +13,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -24,6 +22,7 @@ import javafx.scene.control.LabelBuilder;
 import javafx.scene.control.Slider;
 import javafx.scene.control.SliderBuilder;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.Glow;
 import javafx.scene.effect.GlowBuilder;
 import javafx.scene.effect.Reflection;
@@ -50,6 +49,7 @@ import com.guigarage.fx.grid.demo.itunes.ITunesDataSource;
 import com.guigarage.fx.grid.demo.itunes.ITunesDataSourceReader;
 import com.guigarage.fx.grid.demo.itunes.ITunesMedia;
 import com.guigarage.fx.grid.demo.itunes.ITunesMediaType;
+import com.guigarage.fx.grid.demo.util.ImageFitSizeHelper;
 
 public class JGridFXDemo5 extends Application {
 
@@ -80,13 +80,14 @@ public class JGridFXDemo5 extends Application {
 
 		private Reflection reflection;
 		
+		private Label titleLabel;
+		
 		private Rectangle borderRectangle;
 		
-		private double imageHeightDivider = 1;
-		
-		private double imageWidthDivider = 1;
+		private ImageFitSizeHelper helper;
 		
 		public MovieGridCell() {
+			setCssDependency();
 			previewView = new ImageView();
 			previewView.setPreserveRatio(true);
 			previewView.setSmooth(true);
@@ -100,11 +101,33 @@ public class JGridFXDemo5 extends Application {
 			reflection.setBottomOpacity(0);
 			reflection.setTopOpacity(0.8);
 	        previewView.setEffect(reflection);
+	        helper = new ImageFitSizeHelper(previewView);
+	        scaleXProperty().addListener(new ChangeListener<Number>() {
+
+				@Override
+				public void changed(ObservableValue<? extends Number> arg0,
+						Number arg1, Number arg2) {
+					helper.recalc();
+				}
+			});
+	        scaleYProperty().addListener(new ChangeListener<Number>() {
+
+				@Override
+				public void changed(ObservableValue<? extends Number> arg0,
+						Number arg1, Number arg2) {
+					helper.recalc();
+				}
+			});
 	        
 	        Glow borderGlow = GlowBuilder.create().level(30).build();
-	        borderRectangle = RectangleBuilder.create().fill(Color.TRANSPARENT).strokeWidth(3).stroke(Color.BLUE.deriveColor(1, 1, 1, 0.5)).effect(borderGlow).build();
+	        BoxBlur blur = new BoxBlur();
+	        blur.setWidth(2);
+	        blur.setHeight(2);
+	        blur.setIterations(1);
+	        blur.setInput(borderGlow);
+	        borderRectangle = RectangleBuilder.create().fill(Color.TRANSPARENT).strokeWidth(3).stroke(Color.BLUE.deriveColor(1, 1, 1, 0.8)).effect(blur).build();
 	        borderRectangle.setOpacity(0.0);
-			previewView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	        borderRectangle.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 				@Override
 				public void handle(MouseEvent arg0) {
@@ -150,20 +173,31 @@ public class JGridFXDemo5 extends Application {
 										});
 									}
 								});
+					} else {
+						System.out.println("No Preview!");
 					}
 				}
 			});
 
+	        titleLabel = new Label();
+	        titleLabel.setTextFill(Color.WHITE);
+	        titleLabel.setText("Title");
+	        titleLabel.setOpacity(0.0);
+	        
 			//TODO:NOT WORKING
 //			BorderPane borderPane = new BorderPane();
+//			Pane pane = new Pane();
+//			pane.getChildren().add(previewView);
+//			pane.getChildren().add(borderRectangle);
 //			getChildren().add(borderPane);
-//			borderPane.setCenter(previewView);
+//			borderPane.setCenter(pane);
+//			borderPane.setBottom(titleLabel);
 
-			//TODO:WORKING
-			getChildren().add(previewView);
-			
-			//TODO:NO CORRECT SIZE
+			//WORKING
+	        setGraphic(previewView);
+//			getChildren().add(previewView);
 //			getChildren().add(borderRectangle);
+//			getChildren().add(titleLabel);
 
 			itemProperty().addListener(new ChangeListener<ITunesMedia>() {
 
@@ -171,11 +205,14 @@ public class JGridFXDemo5 extends Application {
 				public void changed(
 						ObservableValue<? extends ITunesMedia> arg0,
 						ITunesMedia arg1, ITunesMedia arg2) {
+					if(arg2.getArtworkUrl100() != null) {
 					previewView.setImage(new Image(arg2.getArtworkUrl100()
 							.replace("100x100", "400x400"), true));
-			        borderRectangle.widthProperty().bind(previewView.getImage().widthProperty().divide(imageWidthDivider));
-			        borderRectangle.heightProperty().bind(previewView.getImage().heightProperty().divide(imageHeightDivider));
-
+					}
+					titleLabel.setText(arg2.getTrackName());
+					
+					borderRectangle.widthProperty().bind(helper.imageWidthInViewProperty().multiply(MovieGridCell.this.getScaleX()));
+			        borderRectangle.heightProperty().bind(helper.imageHeightInViewProperty().multiply(MovieGridCell.this.getScaleY()));
 				}
 			});
 
@@ -198,6 +235,7 @@ public class JGridFXDemo5 extends Application {
 									.node(MovieGridCell.this).build();
 							scaleInTransition.play();
 							borderRectangle.setOpacity(1.0);
+							titleLabel.setOpacity(1.0);
 							previewView.setEffect(null);
 						}
 					});
@@ -221,6 +259,7 @@ public class JGridFXDemo5 extends Application {
 									.node(MovieGridCell.this).build();
 							scaleOutTransition.play();
 							borderRectangle.setOpacity(0.0);
+							titleLabel.setOpacity(0.0);
 							previewView.setEffect(reflection);
 						}
 					});
@@ -231,9 +270,7 @@ public class JGridFXDemo5 extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("JGridFX Demo 4");
 
-		final ObservableList<ITunesMedia> list = FXCollections
-				.<ITunesMedia> observableArrayList();
-		myGrid = new GridView<>(list);
+		myGrid = new GridView<>();
 		myGrid.cellWidthProperty().set(200);
 		myGrid.cellHeightProperty().set(200);
 		myGrid.setCellFactory(new Callback<GridView<ITunesMedia>, GridCell<ITunesMedia>>() {
@@ -270,7 +307,7 @@ public class JGridFXDemo5 extends Application {
 					reader.setLimit(200);
 					reader.setMediaType(ITunesMediaType.MOVIE);
 					ITunesDataSource dataSource = new ITunesDataSource(reader);
-					dataSource.setResultList(list);
+					dataSource.setResultList(myGrid.getItems());
 					dataSource.retrieve();
 					loadingLabel.setOpacity(0);
 				} catch (Exception e) {

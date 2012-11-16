@@ -16,6 +16,7 @@ import javafx.util.Callback;
 import com.guigarage.fx.grid.GridCell;
 import com.guigarage.fx.grid.GridView;
 import com.guigarage.fx.grid.cell.ColorGridCell;
+import com.guigarage.fx.grid.demo.util.JGridControl;
 
 public class JGridFXDemo3 extends Application {
 

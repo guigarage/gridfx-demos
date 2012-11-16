@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import com.guigarage.fx.grid.GridView;
+import com.guigarage.fx.grid.demo.util.JGridControl;
 
 public class JGridFXDemo1 extends Application {
 
@@ -25,7 +26,7 @@ public class JGridFXDemo1 extends Application {
 		
 		final ObservableList<String> list = FXCollections.<String>observableArrayList();
 		myGrid = new GridView<>(list);
-		myGrid.setStyle("-fx-border-color: black;");
+//		myGrid.setStyle("-fx-border-color: black;");
 
 		list.add("1");
 		list.add("2");
